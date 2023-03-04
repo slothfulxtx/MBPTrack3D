@@ -1,0 +1,120 @@
+# dataset configs
+
+dataset_cfg:
+  dataset_type: Waymo
+  data_root_dir: data/waymo_sot/
+  category_name: Pedestrian
+  # crop local area for tracking
+  frame_npts: 1024
+  frame_offset: 2.0
+  frame_offset2: 0.0
+  frame_scale: 1.0
+  # crop the tracked target across frames to generate completion gt
+  target_scale: 1.25
+  target_offset: 0.0
+  # params to simulate motion
+  offset_max: [3., 10., 10.]
+  up_axis: [0,-1,0]
+  degree: True 
+  eval_cfg:
+    cache: False
+    use_z: True
+    preload_offset: -1
+
+  
+
+# model configs
+
+model_cfg:
+  model_type: MBPTrack
+  train_memory_size: 2
+  # ref_memory_size: 2
+  eval_memory_size: 3
+  backbone_cfg:
+    type: DGCNN
+    layers_cfg:
+      - {
+        mlps: [0, 64, 64, 128],
+        use_xyz: True,
+        sample_method: Range, 
+        nsample: 32,
+      }
+      - {
+        mlps: [128, 128, 128, 128],
+        use_xyz: True,
+        sample_method: Range,
+        nsample: 32,
+      }
+      - {
+        mlps: [128, 256, 256, 256],
+        use_xyz: True,
+        sample_method: Range,
+        nsample: 32,
+      }
+    out_channels: 128
+    downsample_ratios: [2,4,8]
+  
+  transformer_cfg:
+    feat_dim: 128
+    layers_cfg: 
+      - {
+        type: attn,
+        feat_dim: 128,
+        num_heads: 1,
+        attn_dropout: 0.1,
+        dropout: 0.1,
+        norm: 'layer_norm',
+        ffn_cfg: {
+          hidden_dim: 128,
+          activation: 'relu',
+          dropout: 0.1,
+          use_bias: True,
+          norm: 'layer_norm'
+        },
+        pos_emb_cfg: {
+          type: mlp
+        },
+      }
+      - {
+        type: attn,
+        feat_dim: 128,
+        num_heads: 1,
+        attn_dropout: 0.1,
+        dropout: 0.1,
+        norm: 'layer_norm',
+        ffn_cfg: {
+          hidden_dim: 128,
+          activation: 'relu',
+          dropout: 0.1,
+          use_bias: True,
+          norm: 'layer_norm'
+        },
+        pos_emb_cfg: {
+          type: mlp
+        },
+      }
+    
+  rpn_cfg:
+    feat_dim: 128
+    n_smp_x: 3
+    n_smp_y: 3
+    n_smp_z: 5
+    n_proposals: 64
+    n_proposals_train: 48
+    sample_method: shrink
+    edge_aggr:
+      pre_mlps: [129, 128, 128]
+      mlps: [128, 128, 128]
+      use_xyz: True
+      nsample: 8
+    # sigma_n2: 0.15
+    # fixed_sigma_n2: True
+
+# task configs
+task_type: MBPTask
+missing_threshold: 0.2
+
+eval_cfg:
+  batch_size: 1
+  num_workers: 4
+  iou_space: 3 
