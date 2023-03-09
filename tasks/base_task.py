@@ -108,6 +108,30 @@ class BaseTask(pl.LightningModule):
         self.succ.reset()
         self.runtime.reset()
         self.n_frames.reset()
+        if self.cfg.model_cfg.model_type == 'MBPTrack':
+            with torch.no_grad():
+                for _ in range(100):
+                    backbone_input = dict(
+                        pcds=torch.randn(1, 1, 1024, 3).cuda(),
+                    )
+                    trfm_input = dict(
+                        xyz=torch.randn(1, 128, 3).cuda(),
+                        feat=torch.randn(1, 128, 128).cuda(),
+                        memory=dict(
+                            feat=torch.randn(2, 1, 128, 3, 128).cuda(),
+                            xyz=torch.randn(1, 3, 128, 3).cuda(),
+                            mask=torch.randn(1, 3, 128).cuda(),
+                        ),
+                    )
+                    loc_input = dict(
+                        xyz=torch.randn(1, 128, 3).cuda(),
+                        geo_feat=torch.randn(1, 128, 128).cuda(),
+                        mask_feat=torch.randn(1, 128, 128).cuda(),
+                        lwh=torch.ones(1, 3).cuda()
+                    )
+                    _ = self.model(backbone_input, 'embed')
+                    _ = self.model(trfm_input, 'propagate')
+                    _ = self.model(loc_input, 'localize')
 
     def _on_test_epoch_start_waymo_format(self):
         self.succ_total.reset()
