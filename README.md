@@ -106,16 +106,36 @@ python main.py configs/mbptrack_kitti_ped_cfg.yaml --gpus 0 1
 
 To test a trained model, specify the checkpoint location with `--resume_from` argument and set the `--phase` argument as `test`.
 
-We provide all pretrained models [here](https://drive.google.com/drive/folders/1bYa_oLTbQcnm-wQO89Dv5km8HH_GIqSv?usp=drive_link) to reproduce the performance reported in our paper (if nothing goes wrong😀).
+**Note:** We provide all pretrained models [here](https://drive.google.com/drive/folders/1bYa_oLTbQcnm-wQO89Dv5km8HH_GIqSv?usp=drive_link) to reproduce the performance reported in our paper (if nothing goes wrong😀).
 
 ```
 python main.py configs/mbptrack_kitti_ped_cfg.yaml --phase test --resume_from pretrained/mbptrack_kitti_ped.ckpt
 ```
 
+## Performance
+
+<img src="README.assets/image-20230717155619987.png" alt="image-20230717155619987" style="zoom: 50%;" />
+
+![image-20230717155645094](README.assets/image-20230717155645094.png)
+
+
+
 ## Acknowledgement
 
 - This repo is heavily built upon [Open3DSOT](https://github.com/Ghostish/Open3DSOT) and [STNet](https://github.com/fpthink/STNet).
 
-## License
+## Citation
 
-This repository is released under MIT License (see LICENSE file for details).
+If you find this project useful for your research, please consider citing
+
+```
+@article{xu2023mbptrack,
+  title={MBPTrack: Improving 3D Point Cloud Tracking with Memory Networks and Box Priors},
+  author={Xu, Tian-Xing and Guo, Yuan-Chen and Lai, Yu-Kun and Zhang, Song-Hai},
+  journal={arXiv preprint arXiv:2303.05071},
+  year={2023}
+}
+```
+
+
+
